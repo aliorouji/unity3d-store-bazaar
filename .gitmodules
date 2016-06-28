@@ -19,3 +19,6 @@
 [submodule "submodules/android-store-amazon"]
 	path = submodules/android-store-amazon
 	url = https://github.com/soomla/android-store-amazon
+[submodule "submodules/android-store-bazaar"]
+	path = submodules/android-store-bazaar
+	url = https://github.com/orouji/android-store-bazaar

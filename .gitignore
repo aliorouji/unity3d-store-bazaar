@@ -79,3 +79,19 @@ proguard/
 
 Soomla/ProjectSettings
 Soomla/Assets/Plugins/Soomla/Core/
+
+.idea/.name
+
+.idea/compiler.xml
+
+.idea/copyright/profiles_settings.xml
+
+.idea/encodings.xml
+
+.idea/modules.xml
+
+.idea/unity3d-store-bazaar.iml
+
+.idea/vcs.xml
+.idea/
+.idea/copyright/
