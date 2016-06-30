@@ -49,6 +49,7 @@ namespace Soomla.Store
 			additionalDependFiles.Add("Assets/Plugins/Android/Soomla/libs/AndroidStoreAmazon.jar");
 			additionalDependFiles.Add("Assets/Plugins/Android/Soomla/libs/in-app-purchasing-2.0.1.jar");
 			additionalDependFiles.Add("Assets/Plugins/Android/Soomla/libs/AndroidStoreGooglePlay.jar");
+			additionalDependFiles.Add("Assets/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar");
 			additionalDependFiles.Add("Assets/Plugins/Android/Soomla/libs/IInAppBillingService.jar");
 			SoomlaEditorScript.addFileList("Store", "Assets/Soomla/store_file_list", additionalDependFiles.ToArray());
 		}
@@ -70,6 +71,9 @@ namespace Soomla.Store
 		GUIContent wp8SimulatorModeLabel = new GUIContent("Run in Simulator (x86 build)");
 		GUIContent wp8TestModeLabel = new GUIContent("Simulate Store. (Don't forget to adapt IAPMock.xml to fit your IAPs)");
 
+		GUIContent bazaarLabel = new GUIContent("Bazaar");
+		GUIContent bazaarPublicKeyLabel = new GUIContent ("RSA Public Key [?]:", "The RSA public key from Bazaar dev console");
+
 		GUIContent iosSsvLabel = new GUIContent("Fraud Protection [?]:", "Check if you want to turn on purchases verification with SOOMLA Fraud Protection Service.");
 		GUIContent iosVerifyOnServerFailureLabel = new GUIContent("Verify On Server Failure [?]:", "Check if you want your purchases get validated if server failure happens.");
 
@@ -78,6 +82,7 @@ namespace Soomla.Store
 		public void OnEnable() {
 			// Generating AndroidManifest.xml
 //			ManifestTools.GenerateManifest();
+			handleBazaarBPJars(!BazaarBP);
 			handlePlayBPJars(!GPlayBP);
 			handleAmazonBPJars(!AmazonBP);
 		}
@@ -99,7 +104,7 @@ namespace Soomla.Store
 		public void OnIOSGUI()
 		{
 			EditorGUILayout.HelpBox("Store Settings", MessageType.None);
-			
+
 			IosSSV = EditorGUILayout.Toggle(iosSsvLabel, IosSSV);
 			if (IosSSV) {
 				EditorGUILayout.BeginHorizontal();
@@ -122,8 +127,8 @@ namespace Soomla.Store
 			EditorGUILayout.Space();
 			EditorGUILayout.HelpBox("Billing Service Selection", MessageType.None);
 
-			if (!GPlayBP && !AmazonBP && !NoneBP) {
-					GPlayBP = true;
+			if (!BazaarBP && !GPlayBP && !AmazonBP && !NoneBP) {
+					BazaarBP = true;
 			}
 
 			NoneBP = EditorGUILayout.ToggleLeft(noneBPLabel, NoneBP);
@@ -135,11 +140,24 @@ namespace Soomla.Store
 
 				AmazonBP = false;
 				GPlayBP = false;
+				BazaarBP = false;
 				SoomlaManifestTools.GenerateManifest();
-				handlePlayBPJars(true);
-				handleAmazonBPJars(true);
+				handleBazaarBPJars (true);
+				handlePlayBPJars (true);
+				handleAmazonBPJars (true);
 			}
 
+			BazaarBP = EditorGUILayout.ToggleLeft(bazaarLabel, BazaarBP);
+
+			if (BazaarBP) {
+				EditorGUILayout.BeginHorizontal();
+				EditorGUILayout.Space();
+				EditorGUILayout.LabelField(bazaarPublicKeyLabel, SoomlaEditorScript.FieldWidth, SoomlaEditorScript.FieldHeight);
+				BazaarPublicKey = EditorGUILayout.TextField(BazaarPublicKey, SoomlaEditorScript.FieldHeight);
+				EditorGUILayout.EndHorizontal();
+
+				EditorGUILayout.Space();
+			}
 
 			GPlayBP = EditorGUILayout.ToggleLeft(playLabel, GPlayBP);
 
@@ -189,15 +207,30 @@ namespace Soomla.Store
 				}
 			}
 
+			bpUpdate.TryGetValue("bazaar", out update);
+			if (BazaarBP && !update) {
+				setCurrentBPUpdate("bazaar");
+
+				AmazonBP = false;
+				GPlayBP = false;
+				NoneBP = false;
+				SoomlaManifestTools.GenerateManifest();
+				handleBazaarBPJars (false);
+				handlePlayBPJars (true);
+				handleAmazonBPJars (true);
+			}
+
 			bpUpdate.TryGetValue("play", out update);
 			if (GPlayBP && !update) {
 				setCurrentBPUpdate("play");
 
 				AmazonBP = false;
+				BazaarBP = false;
 				NoneBP = false;
 				SoomlaManifestTools.GenerateManifest();
 				handlePlayBPJars(false);
 				handleAmazonBPJars(true);
+				handleBazaarBPJars(true);
 			}
 
 
@@ -207,9 +240,11 @@ namespace Soomla.Store
 				setCurrentBPUpdate("amazon");
 
 				GPlayBP = false;
+				BazaarBP = false;
 				NoneBP = false;
 				SoomlaManifestTools.GenerateManifest();
 				handlePlayBPJars(true);
+				handleBazaarBPJars(true);
 				handleAmazonBPJars(false);
 			}
 			EditorGUILayout.Space();
@@ -223,7 +258,7 @@ namespace Soomla.Store
 			WP8SimulatorBuild = EditorGUILayout.ToggleLeft(wp8SimulatorModeLabel, WP8SimulatorBuild);
 			EditorGUILayout.Space();
 			WP8TestMode = EditorGUILayout.ToggleLeft(wp8TestModeLabel, WP8TestMode);
-         
+
 			EditorGUILayout.Space();
 		}
 
@@ -245,6 +280,22 @@ namespace Soomla.Store
 		private Dictionary<string, bool> bpUpdate = new Dictionary<string, bool>();
 		private static string bpRootPath = Application.dataPath + "/WebPlayerTemplates/SoomlaConfig/android/android-billing-services/";
 		private static string wp8RootPath = Application.dataPath + "/WebPlayerTemplates/SoomlaConfig/wp8/";
+
+		public static void handleBazaarBPJars(bool remove) {
+			try {
+				if (remove) {
+					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar");
+					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar.meta");
+					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingService.jar");
+					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingService.jar.meta");
+				} else {
+					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/AndroidStoreBazaar.jar",
+						Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar");
+					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/IInAppBillingService.jar",
+						Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingService.jar");
+				}
+			}catch {}
+		}
 
 		public static void handlePlayBPJars(bool remove) {
 			try {
@@ -297,6 +348,29 @@ namespace Soomla.Store
 		public static string PLAY_CLIENT_SECRET_DEFAULT = "YOUR CLIENT SECRET";
 		public static string PLAY_REFRESH_TOKEN_DEFAULT = "YOUR REFRESH TOKEN";
 
+		public static string BAZAAR_PUB_KEY_DEFAULT = "YOUR BAZAAR PUBLIC KEY";
+
+		private static string bazaarPublicKey;
+		public static string BazaarPublicKey
+		{
+			get {
+				if (bazaarPublicKey == null) {
+					bazaarPublicKey = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "BazaarPublicKey");
+					if (bazaarPublicKey == null) {
+						bazaarPublicKey = BAZAAR_PUB_KEY_DEFAULT;
+					}
+				}
+				return bazaarPublicKey;
+			}
+			set
+			{
+				if (bazaarPublicKey != value) {
+					bazaarPublicKey = value;
+					SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "BazaarPublicKey", value.ToString());
+					SoomlaEditorScript.DirtyEditor();
+				}
+			}
+		}
 
 		private static string androidPublicKey;
 		public static string AndroidPublicKey
@@ -527,6 +601,27 @@ namespace Soomla.Store
 				if (gPlayBP != value.ToString()) {
 					gPlayBP = value.ToString();
 					SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "GPlayBP", value.ToString());
+					SoomlaEditorScript.DirtyEditor();
+				}
+			}
+		}
+
+		private static string bazaarBP;
+		public static bool BazaarBP
+		{
+			get {
+				if (bazaarBP == null) {
+					bazaarBP = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "BazaarBP");
+					if (bazaarBP == null) {
+						bazaarBP = false.ToString();
+					}
+				}
+				return Convert.ToBoolean(bazaarBP);
+			}
+			set {
+				if (bazaarBP != value.ToString()) {
+					bazaarBP = value.ToString();
+					SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "BazaarBP", value.ToString());
 					SoomlaEditorScript.DirtyEditor();
 				}
 			}

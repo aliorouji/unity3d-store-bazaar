@@ -33,6 +33,15 @@ namespace Soomla.Store {
 		/// Load the billing service.
 		/// </summary>
 		protected override void _loadBillingService() {
+			if (StoreSettings.BazaarBP) {
+				if (string.IsNullOrEmpty (StoreSettings.BazaarPublicKey) ||
+				    StoreSettings.BazaarPublicKey == StoreSettings.BAZAAR_PUB_KEY_DEFAULT) {
+
+					SoomlaUtils.LogError (TAG, "You chose Bazaar billing service, but RSA Public Key is not set!! Stopping here!!");
+					throw new ExitGUIException ();
+				}
+			}
+
 			if (StoreSettings.GPlayBP) {
 				if (string.IsNullOrEmpty(StoreSettings.AndroidPublicKey) ||
 			 		    StoreSettings.AndroidPublicKey == StoreSettings.AND_PUB_KEY_DEFAULT) {
@@ -44,33 +53,41 @@ namespace Soomla.Store {
 				if (StoreSettings.PlaySsvValidation) {
 					if (string.IsNullOrEmpty(StoreSettings.PlayClientId) ||
 					    StoreSettings.PlayClientId == StoreSettings.PLAY_CLIENT_ID_DEFAULT) {
-						
+
 						SoomlaUtils.LogError(TAG, "You chose Google Play Receipt Validation, but clientId is not set!! Stopping here!!");
 						throw new ExitGUIException();
 					}
-					
+
 					if (string.IsNullOrEmpty(StoreSettings.PlayClientSecret) ||
 					    StoreSettings.PlayClientSecret == StoreSettings.PLAY_CLIENT_SECRET_DEFAULT) {
-						
+
 						SoomlaUtils.LogError(TAG, "You chose Google Play Receipt Validation, but clientSecret is not set!! Stopping here!!");
 						throw new ExitGUIException();
 					}
-					
+
 					if (string.IsNullOrEmpty(StoreSettings.PlayRefreshToken) ||
 					    StoreSettings.PlayRefreshToken == StoreSettings.PLAY_REFRESH_TOKEN_DEFAULT) {
-                        
+
                         SoomlaUtils.LogError(TAG, "You chose Google Play Receipt Validation, but refreshToken is not set!! Stopping here!!");
                         throw new ExitGUIException();
                     }
                 }
             }
-            
+
             AndroidJNI.PushLocalFrame(100);
 			using(AndroidJavaClass jniSoomlaStoreClass = new AndroidJavaClass("com.soomla.store.SoomlaStore")) {
 				jniSoomlaStore = jniSoomlaStoreClass.CallStatic<AndroidJavaObject>("getInstance");
 				bool success = jniSoomlaStore.Call<bool>("loadBillingService");
 				if (!success) {
 					SoomlaUtils.LogError(TAG, "Couldn't load billing service! Billing functions won't work.");
+				}
+			}
+
+			if (StoreSettings.BazaarBP) {
+				using (AndroidJavaClass jniBazaarIabServiceClass = new AndroidJavaClass ("com.soomla.store.billing.bazaar.BazaarIabService")) {
+					AndroidJavaObject jniBazaarIabService = jniBazaarIabServiceClass.CallStatic<AndroidJavaObject> ("getInstance");
+					jniBazaarIabService.Call ("setPublicKey", StoreSettings.BazaarPublicKey);
+					jniBazaarIabServiceClass.SetStatic("AllowAndroidTestPurchases", false);
 				}
 			}
 

@@ -38,10 +38,46 @@ namespace Soomla.Store
 		public void ClearManifest(){
 			RemoveGPlayBPFromManifest();
 			RemoveAmazonBPFromManifest ();
+			RemoveBazaarBPFromManifest ();
 		}
+
 		public void UpdateManifest() {
 			HandleGPlayBPManifest ();
 			HandleAmazonBP ();
+			HandleBazaarBPManifest ();
+			HandleMetaTagBillingService ();
+		}
+
+		private void HandleMetaTagBillingService () {
+			SoomlaManifestTools.RemoveApplicationElement("meta-data", "billing.service");
+			if (StoreSettings.BazaarBP) {
+				SoomlaManifestTools.AddMetaDataTag("billing.service", "bazaar.BazaarIabService");
+			} else if (StoreSettings.GPlayBP) {
+				SoomlaManifestTools.AddMetaDataTag("billing.service", "google.GooglePlayIabService");
+			}
+		}
+
+		public void HandleBazaarBPManifest(){
+			if (StoreSettings.BazaarBP) {
+				AddBazaarBPToManifest();
+			} else {
+				RemoveBazaarBPFromManifest();
+			}
+		}
+
+		private void AddBazaarBPToManifest(){
+			SoomlaManifestTools.SetPermission("com.farsitel.bazaar.permission.PAY_THROUGH_BAZAAR");
+			SoomlaManifestTools.AddActivity("com.soomla.store.billing.bazaar.BazaarIabService$IabActivity",
+				new Dictionary<string, string>() {
+					{"theme", "@android:style/Theme.Translucent.NoTitleBar.Fullscreen"}
+				});
+		}
+
+		private void RemoveBazaarBPFromManifest(){
+			// removing BILLING permission
+			SoomlaManifestTools.RemovePermission("com.farsitel.bazaar.permission.PAY_THROUGH_BAZAAR");
+			// removing Iab Activity
+			SoomlaManifestTools.RemoveActivity("com.soomla.store.billing.bazaar.BazaarIabService$IabActivity");
 		}
 
 		public void HandleGPlayBPManifest(){
@@ -55,10 +91,10 @@ namespace Soomla.Store
 		private void AddGPlayBPToManifest(){
 			SoomlaManifestTools.SetPermission("com.android.vending.BILLING");
 			SoomlaManifestTools.AddActivity("com.soomla.store.billing.google.GooglePlayIabService$IabActivity",
-			                                new Dictionary<string, string>() { 
-				{"theme", "@android:style/Theme.Translucent.NoTitleBar.Fullscreen"} 
+			                                new Dictionary<string, string>() {
+				{"theme", "@android:style/Theme.Translucent.NoTitleBar.Fullscreen"}
 			});
-			SoomlaManifestTools.AddMetaDataTag("billing.service", "google.GooglePlayIabService");
+
 		}
 
 		private void RemoveGPlayBPFromManifest(){
@@ -66,8 +102,6 @@ namespace Soomla.Store
 			SoomlaManifestTools.RemovePermission("com.android.vending.BILLING");
 			// removing Iab Activity
 			SoomlaManifestTools.RemoveActivity("com.soomla.store.billing.google.GooglePlayIabService$IabActivity");
-			
-			SoomlaManifestTools.RemoveApplicationElement("meta-data", "billing.service");
 		}
 
 		public void HandleAmazonBP(){

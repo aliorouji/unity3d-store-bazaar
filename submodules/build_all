@@ -2,6 +2,7 @@
 set -e
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 $DIR/android-store-google-play/build_all
+$DIR/android-store-bazaar/build_all
 $DIR/android-store-amazon/build_all
 $DIR/android-store/build_all
 $DIR/ios-store/build_all
