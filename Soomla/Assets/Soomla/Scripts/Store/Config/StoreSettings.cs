@@ -286,13 +286,13 @@ namespace Soomla.Store
 				if (remove) {
 					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar");
 					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar.meta");
-					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingService.jar");
-					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingService.jar.meta");
+					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingServiceBazaar.jar");
+					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingServiceBazaar.jar.meta");
 				} else {
 					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/AndroidStoreBazaar.jar",
 						Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar");
-					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/IInAppBillingService.jar",
-						Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingService.jar");
+					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/IInAppBillingServiceBazaar.jar",
+						Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingServiceBazaar.jar");
 				}
 			}catch {}
 		}
