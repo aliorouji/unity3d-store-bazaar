@@ -1,3 +1,8 @@
+### v1.12.0
+
+* Changes
+  * Bazaar IAP support added - without verification (will be added soon)
+
 ### v1.11.2 [view commit logs](https://github.com/soomla/unity3d-store/compare/v1.11.1...v1.11.2)
 
 * Fixes

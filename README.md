@@ -1,30 +1,11 @@
-*This project is a part of The [SOOMLA](http://www.soom.la) Framework, which is a series of open source initiatives with a joint goal to help mobile game developers do more together. SOOMLA encourages better game design, economy modeling, social engagement, and faster development.*
-
 Haven't you ever wanted an in-app purchase one liner that looks like this ?!
 
 ```cs
 StoreInventory.BuyItem("[itemId]");
 ```
 
-unity3d-store
+unity3d-store-bazaar
 ---
-
-*SOOMLA's Store Module for Unity3d*
-
-**March 9th:** v1.7.15 **Unity 5** compatibility patch.
-
-> If you are upgrading an already imported store module, make sure to delete the `<project>/Assets/Soomla/compilations` folder.
-
-> If you get the “API Update Required” window, click the "I Made a Backup. Go Ahead!" button, Unity will automatically update some of our code.
-
-**October 29th:** v1.7 **Work in editor!** When you're in the Unity editor, data will be saved to PlayerPrefs.
-
-**October 3rd, 2013:** iOS Server Side Verification is now implemented into unity3d-store. The server is a complimentary server provided by [SOOMLA](http://soom.la) to help you get your in-game purchases a bit more secured. This feature is not enabled by default. In order to enable Server Side verification go to the Soomla prefab and set  **ios Server Side Verification -> true**.
-
-* More documentation and information in SOOMLA's [Knowledge Base](http://know.soom.la/docs/platforms/unity)  
-* For issues you can use the [issues](https://github.com/soomla/unity3d-store/issues) section or SOOMLA's [Answers Website](http://answers.soom.la)
-
-unity3d-store is the Unity3d flavor of SOOMLA's Store Module.
 
 ## Economy Model
 ![SOOMLA's Economy Model](http://know.soom.la/img/tutorial_img/soomla_diagrams/EconomyModel.png)
@@ -34,12 +15,10 @@ unity3d-store is the Unity3d flavor of SOOMLA's Store Module.
 
 ####Pre baked unitypackages:
 
-> If you're upgrading from a version below v1.7.x make sure you take soomla-unity3d-core again.
-
-[unity3d-store v1.11.2](https://www.assetstore.unity3d.com/en/#!/content/6103)
+[unity3d-store-bazaar v1.12.0](https://github.com/orouji/unity3d-store-bazaar/releases/tag/1.12.0)
 
 #### From sources:
- - Clone this repository recursively: `git clone --recursive https://github.com/soomla/unity3d-store.git`
+ - Clone this repository recursively: `git clone --recursive https://github.com/orouji/unity3d-store-bazaar.git`
  - Run `./build_all` from project directory
 
 ## Debugging
@@ -52,49 +31,29 @@ Unity debug messages will only be printed out if you build the project with _Dev
 There are some necessary files in submodules lined with symbolic links. If you're cloning the project make sure you clone it with the `--recursive` flag.
 
 ```
-$ git clone --recursive git@github.com:soomla/unity3d-store.git
+$ git clone --recursive git@github.com:orouji/unity3d-store-bazaar.git
 ```
 
 ## Getting Started
 
-1. First, you'll need to either download (RECOMMENDED) the unity3d-store pre-baked packages, or clone unity3d-store.
+1. First, you'll need to either download (RECOMMENDED) the unity3d-store pre-baked packages
 
-  - RECOMMENDED: Download [unity3d-store](https://www.assetstore.unity3d.com/en/#!/content/6103)
+  - Download `soomla-unity3d-core.unitypackage` and `soomla-unity3d-store.unitypackage` from this link [unity3d-store-bazaar v1.12.0](https://github.com/orouji/unity3d-store-bazaar/releases/tag/1.12.0)
 
-    OR, if you'd like to work with sources:
-
-  - Clone unity3d-store from SOOMLA's github page.
-
-    ```
-    $ git clone --recursive git@github.com:soomla/unity3d-store.git
-    ```
-
-    >There are some necessary files in submodules linked with symbolic links. If you're cloning the project make sure to include the `--recursive` flag.
-
-2. ~~Drag the "StoreEvents" and "CoreEvents" Prefabs from `Assets/Soomla/Prefabs` into your scene. You should see them listed in the "Hierarchy" panel.~~
-
-    >This step is no longer required starting from Store v1.9.0
-
-  ![alt text](http://know.soom.la/img/tutorial_img/unity_getting_started/prefabs.png?v=2 "Prefabs")
+2. Import both unity packages to your unity project
 
 3. On the menu bar click **Window > Soomla > Edit Settings** and change the values for "Soomla Secret" and "Public Key":
+  - **Select Your Biling Provider** - This can be Google Play, Bazaar, Amazon, App Store or WP
 
-  - **Soomla Secret** - This is an encryption secret you provide that will be used to secure your data. (If you used versions before v1.5.2 this secret MUST be the same as Custom Secret)
+  - **Soomla Secret** - This is an encryption secret you provide that will be used to secure your data.
 
-  - **Public Key** - If your billing service provider is Google Play, you'll need to insert the public key given to you from Google. (Learn more in step 4 [here](/android/store/Store_GooglePlayIAB)). **Choose both secrets wisely. You can't change them after you launch your game!**
-
-  - **Fraud Protection** - If your billing service provider supports Fraud Protection, you can turn on this option and provide needed data.
-    Optionally, you can turn on `Verify On Server Failure` if you want to get purchases automatically verified in case of network failures during the verification process.
-
-    > In order to get clientId, clientSecret and refreshToken for Google Play go over [Google Play Purchase Verification](/android/store/Store_GooglePlayVerification).
-
-    ![alt text](http://know.soom.la/img/tutorial_img/unity_getting_started/soomlaSettings.png "Soomla Settings")
+  - **Public Key** - You'll need to insert the public key given to you from Google or Bazaar. **Choose both secrets wisely. You can't change them after you launch your game!**
 
 4. Create your own implementation of `IStoreAssets` in order to describe your game's specific assets.
 
   - For a brief example, see the [example](#example) at the bottom.
 
-  - For a more detailed example, see our MuffinRush [example](https://github.com/soomla/unity3d-store/blob/master/Soomla/Assets/Examples/MuffinRush/MuffinRushAssets.cs).
+  - For a more detailed example, see our MuffinRush [example](https://github.com/orouji/unity3d-store-bazaar/blob/master/Soomla/Assets/Examples/MuffinRush/MuffinRushAssets.cs).
 
 5. Initialize `SoomlaStore` with the class you just created:
 
@@ -106,7 +65,7 @@ $ git clone --recursive git@github.com:soomla/unity3d-store.git
 
     > Initialize SoomlaStore ONLY ONCE when your application loads.
 
-6. You'll need an event handler in order to be notified about in-app purchasing related events. Refer to the document about [Event Handling](https://github.com/soomla/unity3d-store#event-handling) for more information.
+6. You'll need an event handler in order to be notified about in-app purchasing related events. Refer to the document about [Event Handling](https://github.com/orouji/unity3d-store-bazaar#event-handling) for more information.
 
 That's it! You now have storage and in-app purchasing capabilities ALL-IN-ONE!
 
@@ -125,7 +84,7 @@ SoomlaStore.StopIabServiceInBg();
 ```
 
 This is not mandatory, your game will work without this, but we do recommend it because it enhances performance. The
-idea here is to preemptively start the in-app billing setup process with Google's (or Amazon's) servers.
+idea here is to preemptively start the in-app billing setup process with Bazaar, Google's (or Amazon's) servers.
 
 In many games the user has to navigate into the in-game store, or start a game session in order to reach the point of
 making purchases. You want the user experience to be fast and smooth and prevent any lag that could be caused by network
@@ -177,7 +136,7 @@ One last thing is that this script didn't follow symlink in submodules of submod
 
 When we implemented modelV3, we were thinking about ways that people buy things inside apps. We figured out many ways you can let your users purchase stuff in your game and we designed the new modelV3 to support 2 of them: PurchaseWithMarket and PurchaseWithVirtualItem.
 
-**PurchaseWithMarket** is a PurchaseType that allows users to purchase a VirtualItem with Google Play or the App Store.  
+**PurchaseWithMarket** is a PurchaseType that allows users to purchase a VirtualItem with Bazaar, Google Play, Amazon or the App Store.
 **PurchaseWithVirtualItem** is a PurchaseType that lets your users purchase a VirtualItem with a different VirtualItem. For Example: Buying 1 Sword with 100 Gems.
 
 In order to define the way your various virtual items (Goods, Coins ...) are purchased, you'll need to create your implementation of IStoreAsset (the same one from step 4 in the "Getting Started" above).
@@ -203,7 +162,7 @@ Now you can use _StoreInventory_ to buy your new VirtualCurrencyPack:
 StoreInventory.buyItem(TEN_COINS_PACK.ItemId);
 ```
 
-And that's it! unity3d-store knows how to contact Google Play or the App Store for you and will redirect your users to their purchasing system to complete the transaction. Don't forget to subscribe to store events in order to get the notified of successful or failed purchases (see [Event Handling](https://github.com/soomla/unity3d-store#event-handling)).
+And that's it! unity3d-store knows how to contact Bazaar, Google Play or the App Store for you and will redirect your users to their purchasing system to complete the transaction. Don't forget to subscribe to store events in order to get the notified of successful or failed purchases (see [Event Handling](https://github.com/soomla/unity3d-store#event-handling)).
 
 
 Storage & Meta-Data
@@ -284,14 +243,6 @@ Fork -> Clone -> Implement -> Add documentation -> Test -> Pull-Request.
 
 IMPORTANT: If you would like to contribute, please follow our [Documentation Guidelines](https://github.com/soomla/unity3d-store/blob/master/documentation.md
 ). Clear, consistent comments will make our code easy to understand.
-
-## SOOMLA, Elsewhere ...
-
-+ [Framework Website](http://www.soom.la/)
-+ [Knowledge Base](http://know.soom.la/)
-
-
-<a href="https://www.facebook.com/pages/The-SOOMLA-Project/389643294427376"><img src="http://know.soom.la/img/tutorial_img/social/Facebook.png"></a><a href="https://twitter.com/Soomla"><img src="http://know.soom.la/img/tutorial_img/social/Twitter.png"></a><a href="https://plus.google.com/+SoomLa/posts"><img src="http://know.soom.la/img/tutorial_img/social/GoogleP.png"></a><a href ="https://www.youtube.com/channel/UCR1-D9GdSRRLD0fiEDkpeyg"><img src="http://know.soom.la/img/tutorial_img/social/Youtube.png"></a>
 
 License
 ---
