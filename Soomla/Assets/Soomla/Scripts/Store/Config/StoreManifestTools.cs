@@ -60,9 +60,24 @@ namespace Soomla.Store
 		public void HandleBazaarBPManifest(){
 			if (StoreSettings.BazaarBP) {
 				AddBazaarBPToManifest();
+
+				if (StoreSettings.NivadValidation) {
+					AddNivadRelatedPermissions ();
+				} else {
+					RemoveNivadRelatedPermissions ();
+				}
 			} else {
 				RemoveBazaarBPFromManifest();
+				RemoveNivadRelatedPermissions ();
 			}
+		}
+
+		private void AddNivadRelatedPermissions () {
+			SoomlaManifestTools.SetPermission ("android.permission.ACCESS_NETWORK_STATE");
+		}
+
+		private void RemoveNivadRelatedPermissions () {
+			SoomlaManifestTools.RemovePermission("android.permission.ACCESS_NETWORK_STATE");
 		}
 
 		private void AddBazaarBPToManifest(){

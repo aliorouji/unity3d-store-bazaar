@@ -24,9 +24,9 @@ using UnityEditor;
 namespace Soomla.Store
 {
 
-#if UNITY_EDITOR
+	#if UNITY_EDITOR
 	[InitializeOnLoad]
-#endif
+	#endif
 	/// <summary>
 	/// This class holds the store's configurations.
 	/// </summary>
@@ -35,11 +35,11 @@ namespace Soomla.Store
 
 		private static string StoreModulePrefix = "Store";
 
-#if UNITY_EDITOR
+		#if UNITY_EDITOR
 
 		static StoreSettings instance = new StoreSettings();
 
-		static string currentModuleVersion = "1.12.0";
+		static string currentModuleVersion = "1.13.0";
 
 		static StoreSettings()
 		{
@@ -51,6 +51,8 @@ namespace Soomla.Store
 			additionalDependFiles.Add("Assets/Plugins/Android/Soomla/libs/AndroidStoreGooglePlay.jar");
 			additionalDependFiles.Add("Assets/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar");
 			additionalDependFiles.Add("Assets/Plugins/Android/Soomla/libs/IInAppBillingService.jar");
+			additionalDependFiles.Add("Assets/Plugins/Android/Soomla/libs/IInAppBillingServiceBazaar.jar");
+			additionalDependFiles.Add("Assets/Plugins/Android/Soomla/libs/java-jwt-2.1.0.jar");
 			SoomlaEditorScript.addFileList("Store", "Assets/Soomla/store_file_list", additionalDependFiles.ToArray());
 		}
 
@@ -58,9 +60,9 @@ namespace Soomla.Store
 		GUIContent noneBPLabel = new GUIContent("You have your own Billing Service");
 		GUIContent playLabel = new GUIContent("Google Play");
 		GUIContent playSsvLabel = new GUIContent("Fraud Protection [?]:", "Check if you want to turn on purchases verification with SOOMLA Fraud Protection Service.");
-		GUIContent nivadLabel = new GUIContent("Fraud Protection [?]:", "Check if you want to use Nivad");
+		GUIContent nivadLabel = new GUIContent("Nivad.io Fraud Protection [?]:", "Check if you want to use Nivad");
 		GUIContent nivadAppIdLabel = new GUIContent("Nivad Application ID");
-        GUIContent nivadBillingSecretLabel = new GUIContent("Nivad Billing Secret");
+		GUIContent nivadBillingSecretLabel = new GUIContent("Nivad Billing Secret");
 		GUIContent playClientIdLabel = new GUIContent("Client ID");
 		GUIContent playClientSecretLabel = new GUIContent("Client Secret");
 		GUIContent playRefreshTokenLabel = new GUIContent("Refresh Token");
@@ -84,7 +86,7 @@ namespace Soomla.Store
 
 		public void OnEnable() {
 			// Generating AndroidManifest.xml
-//			ManifestTools.GenerateManifest();
+			//			ManifestTools.GenerateManifest();
 			handleBazaarBPJars(!BazaarBP);
 			handlePlayBPJars(!GPlayBP);
 			handleAmazonBPJars(!AmazonBP);
@@ -131,7 +133,7 @@ namespace Soomla.Store
 			EditorGUILayout.HelpBox("Billing Service Selection", MessageType.None);
 
 			if (!BazaarBP && !GPlayBP && !AmazonBP && !NoneBP) {
-					BazaarBP = true;
+				BazaarBP = true;
 			}
 
 			NoneBP = EditorGUILayout.ToggleLeft(noneBPLabel, NoneBP);
@@ -162,23 +164,23 @@ namespace Soomla.Store
 				EditorGUILayout.Space();
 
 				EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(SoomlaEditorScript.EmptyContent, SoomlaEditorScript.SpaceWidth, SoomlaEditorScript.FieldHeight);
-                NivadValidation = EditorGUILayout.Toggle(nivadLabel, NivadValidation);
-                EditorGUILayout.EndHorizontal();
+				EditorGUILayout.LabelField(SoomlaEditorScript.EmptyContent, SoomlaEditorScript.SpaceWidth, SoomlaEditorScript.FieldHeight);
+				NivadValidation = EditorGUILayout.Toggle(nivadLabel, NivadValidation);
+				EditorGUILayout.EndHorizontal();
 
-                if (NivadValidation) {
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.Space();
-                    EditorGUILayout.LabelField(nivadAppIdLabel, SoomlaEditorScript.FieldWidth, SoomlaEditorScript.FieldHeight);
-                    NivadAppId = EditorGUILayout.TextField(NivadAppId, SoomlaEditorScript.FieldHeight);
-                    EditorGUILayout.EndHorizontal();
+				if (NivadValidation) {
+					EditorGUILayout.BeginHorizontal();
+					EditorGUILayout.Space();
+					EditorGUILayout.LabelField(nivadAppIdLabel, SoomlaEditorScript.FieldWidth, SoomlaEditorScript.FieldHeight);
+					NivadAppId = EditorGUILayout.TextField(NivadAppId, SoomlaEditorScript.FieldHeight);
+					EditorGUILayout.EndHorizontal();
 
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.Space();
-                    EditorGUILayout.LabelField(nivadBillingSecretLabel, SoomlaEditorScript.FieldWidth, SoomlaEditorScript.FieldHeight);
-                    NivadBillingSecret = EditorGUILayout.TextField(NivadBillingSecret, SoomlaEditorScript.FieldHeight);
-                    EditorGUILayout.EndHorizontal();
-                }
+					EditorGUILayout.BeginHorizontal();
+					EditorGUILayout.Space();
+					EditorGUILayout.LabelField(nivadBillingSecretLabel, SoomlaEditorScript.FieldWidth, SoomlaEditorScript.FieldHeight);
+					NivadBillingSecret = EditorGUILayout.TextField(NivadBillingSecret, SoomlaEditorScript.FieldHeight);
+					EditorGUILayout.EndHorizontal();
+				}
 			}
 
 			GPlayBP = EditorGUILayout.ToggleLeft(playLabel, GPlayBP);
@@ -311,14 +313,14 @@ namespace Soomla.Store
 					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingServiceBazaar.jar");
 					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingServiceBazaar.jar.meta");
 					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/java-jwt-2.1.0.jar");
-                    FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/java-jwt-2.1.0.jar.meta");
+					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/java-jwt-2.1.0.jar.meta");
 				} else {
 					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/AndroidStoreBazaar.jar",
 						Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar");
 					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/IInAppBillingServiceBazaar.jar",
 						Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingServiceBazaar.jar");
 					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/java-jwt-2.1.0.jar",
-                    						Application.dataPath + "/Plugins/Android/Soomla/libs/java-jwt-2.1.0.jar");
+						Application.dataPath + "/Plugins/Android/Soomla/libs/java-jwt-2.1.0.jar");
 				}
 			}catch {}
 		}
@@ -332,9 +334,9 @@ namespace Soomla.Store
 					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingService.jar.meta");
 				} else {
 					FileUtil.CopyFileOrDirectory(bpRootPath + "google-play/AndroidStoreGooglePlay.jar",
-							Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreGooglePlay.jar");
+						Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreGooglePlay.jar");
 					FileUtil.CopyFileOrDirectory(bpRootPath + "google-play/IInAppBillingService.jar",
-							Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingService.jar");
+						Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingService.jar");
 				}
 			}catch {}
 		}
@@ -348,16 +350,16 @@ namespace Soomla.Store
 					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/in-app-purchasing-2.0.1.jar.meta");
 				} else {
 					FileUtil.CopyFileOrDirectory(bpRootPath + "amazon/AndroidStoreAmazon.jar",
-					                             Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreAmazon.jar");
+						Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreAmazon.jar");
 					FileUtil.CopyFileOrDirectory(bpRootPath + "amazon/in-app-purchasing-2.0.1.jar",
-					                             Application.dataPath + "/Plugins/Android/Soomla/libs/in-app-purchasing-2.0.1.jar");
+						Application.dataPath + "/Plugins/Android/Soomla/libs/in-app-purchasing-2.0.1.jar");
 				}
 			}catch {}
 		}
 
 
 
-#endif
+		#endif
 
 
 
@@ -425,48 +427,48 @@ namespace Soomla.Store
 		}
 
 		private static string nivadAppId;
-        public static string NivadAppId
-        {
-            get {
-                if (nivadAppId == null) {
-                    nivadAppId = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "NivadAppId");
-                    if (nivadAppId == null) {
-                        nivadAppId = NIVAD_APP_ID_DEFAULT;
-                    }
-                }
-                return nivadAppId;
-            }
-            set
-            {
-                if (nivadAppId != value) {
-                    nivadAppId = value;
-                    SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "NivadAppId", value.ToString());
-                    SoomlaEditorScript.DirtyEditor();
-                }
-            }
-        }
+		public static string NivadAppId
+		{
+			get {
+				if (nivadAppId == null) {
+					nivadAppId = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "NivadAppId");
+					if (nivadAppId == null) {
+						nivadAppId = NIVAD_APP_ID_DEFAULT;
+					}
+				}
+				return nivadAppId;
+			}
+			set
+			{
+				if (nivadAppId != value) {
+					nivadAppId = value;
+					SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "NivadAppId", value.ToString());
+					SoomlaEditorScript.DirtyEditor();
+				}
+			}
+		}
 
-        private static string nivadBillingSecret;
-        public static string NivadBillingSecret
-        {
-            get {
-                if (nivadBillingSecret == null) {
-                    nivadBillingSecret = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "NivadBillingSecret");
-                    if (nivadBillingSecret == null) {
-                        nivadBillingSecret = NIVAD_BILLING_SECRET_DEFAULT;
-                    }
-                }
-                return nivadBillingSecret;
-            }
-            set
-            {
-                if (nivadBillingSecret != value) {
-                    nivadBillingSecret = value;
-                    SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "NivadBillingSecret", value.ToString());
-                    SoomlaEditorScript.DirtyEditor();
-                }
-            }
-        }
+		private static string nivadBillingSecret;
+		public static string NivadBillingSecret
+		{
+			get {
+				if (nivadBillingSecret == null) {
+					nivadBillingSecret = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "NivadBillingSecret");
+					if (nivadBillingSecret == null) {
+						nivadBillingSecret = NIVAD_BILLING_SECRET_DEFAULT;
+					}
+				}
+				return nivadBillingSecret;
+			}
+			set
+			{
+				if (nivadBillingSecret != value) {
+					nivadBillingSecret = value;
+					SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "NivadBillingSecret", value.ToString());
+					SoomlaEditorScript.DirtyEditor();
+				}
+			}
+		}
 
 		private static string playClientId;
 		public static string PlayClientId
@@ -598,25 +600,25 @@ namespace Soomla.Store
 		}
 
 		private static string nivadValidation;
-        public static bool NivadValidation
-        {
-            get {
-                if (nivadValidation == null) {
-                    nivadValidation = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "NivadValidation");
-                    if (nivadValidation == null) {
-                        nivadValidation = false.ToString();
-                    }
-                }
-                return Convert.ToBoolean(nivadValidation);
-            }
-            set {
-                if (nivadValidation != value.ToString()) {
-                    nivadValidation = value.ToString();
-                    SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "NivadValidation", value.ToString());
-                    SoomlaEditorScript.DirtyEditor();
-                }
-            }
-        }
+		public static bool NivadValidation
+		{
+			get {
+				if (nivadValidation == null) {
+					nivadValidation = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "NivadValidation");
+					if (nivadValidation == null) {
+						nivadValidation = false.ToString();
+					}
+				}
+				return Convert.ToBoolean(nivadValidation);
+			}
+			set {
+				if (nivadValidation != value.ToString()) {
+					nivadValidation = value.ToString();
+					SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "NivadValidation", value.ToString());
+					SoomlaEditorScript.DirtyEditor();
+				}
+			}
+		}
 
 		private static string iosSSV;
 		public static bool IosSSV
@@ -661,7 +663,7 @@ namespace Soomla.Store
 		}
 
 		private static string noneBP;
-    	public static bool NoneBP
+		public static bool NoneBP
 		{
 			get {
 				if (noneBP == null) {
@@ -744,9 +746,9 @@ namespace Soomla.Store
 		}
 
 		private static string wP8SimulatorBuild;
-        public static bool WP8SimulatorBuild
-        {
-            get {
+		public static bool WP8SimulatorBuild
+		{
+			get {
 				if (wP8SimulatorBuild == null) {
 					wP8SimulatorBuild = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "WP8SimulatorBuild");
 					if (wP8SimulatorBuild == null) {
@@ -754,39 +756,39 @@ namespace Soomla.Store
 					}
 				}
 				return Convert.ToBoolean(wP8SimulatorBuild);
-            }
-            set {
+			}
+			set {
 				if (wP8SimulatorBuild != value.ToString()) {
 					wP8SimulatorBuild = value.ToString();
 					SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "WP8SimulatorBuild", value.ToString());
 					SoomlaEditorScript.DirtyEditor();
-#if UNITY_EDITOR
-                    if (value == true)
-                    {
-                        FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/sqlite3.dll");
-                        FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/Sqlite.dll");
-                        FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/Sqlite.winmd");
-                        FileUtil.CopyFileOrDirectory(wp8RootPath + "x86/sqlite3.soomladll",Application.dataPath + "/Plugins/WP8/sqlite3.dll");
-                        FileUtil.CopyFileOrDirectory(wp8RootPath + "x86/Sqlite.soomladll",Application.dataPath + "/Plugins/WP8/Sqlite.dll");
-                        FileUtil.CopyFileOrDirectory(wp8RootPath + "x86/Sqlite.soomlawinmd",Application.dataPath + "/Plugins/WP8/Sqlite.winmd");
-                    }
-                    else
-                    {
-                        FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/sqlite3.dll");
-                        FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/Sqlite.dll");
-                        FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/Sqlite.winmd");
-                        FileUtil.CopyFileOrDirectory(wp8RootPath + "ARM/sqlite3.soomladll",Application.dataPath + "/Plugins/WP8/sqlite3.dll");
-                        FileUtil.CopyFileOrDirectory(wp8RootPath + "ARM/Sqlite.soomlawinmd",Application.dataPath + "/Plugins/WP8/Sqlite.winmd");
-                        FileUtil.CopyFileOrDirectory(wp8RootPath + "ARM/Sqlite.soomladll",Application.dataPath + "/Plugins/WP8/Sqlite.dll");
-                    }
-#endif
-                }
-            }
-        }
+					#if UNITY_EDITOR
+					if (value == true)
+					{
+						FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/sqlite3.dll");
+						FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/Sqlite.dll");
+						FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/Sqlite.winmd");
+						FileUtil.CopyFileOrDirectory(wp8RootPath + "x86/sqlite3.soomladll",Application.dataPath + "/Plugins/WP8/sqlite3.dll");
+						FileUtil.CopyFileOrDirectory(wp8RootPath + "x86/Sqlite.soomladll",Application.dataPath + "/Plugins/WP8/Sqlite.dll");
+						FileUtil.CopyFileOrDirectory(wp8RootPath + "x86/Sqlite.soomlawinmd",Application.dataPath + "/Plugins/WP8/Sqlite.winmd");
+					}
+					else
+					{
+						FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/sqlite3.dll");
+						FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/Sqlite.dll");
+						FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/WP8/Sqlite.winmd");
+						FileUtil.CopyFileOrDirectory(wp8RootPath + "ARM/sqlite3.soomladll",Application.dataPath + "/Plugins/WP8/sqlite3.dll");
+						FileUtil.CopyFileOrDirectory(wp8RootPath + "ARM/Sqlite.soomlawinmd",Application.dataPath + "/Plugins/WP8/Sqlite.winmd");
+						FileUtil.CopyFileOrDirectory(wp8RootPath + "ARM/Sqlite.soomladll",Application.dataPath + "/Plugins/WP8/Sqlite.dll");
+					}
+					#endif
+				}
+			}
+		}
 		private static string wP8TestMode;
-        public static bool WP8TestMode
-        {
-            get {
+		public static bool WP8TestMode
+		{
+			get {
 				if (wP8TestMode == null) {
 					wP8TestMode = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "WP8TestMode");
 					if (wP8TestMode == null) {
@@ -794,14 +796,14 @@ namespace Soomla.Store
 					}
 				}
 				return Convert.ToBoolean(wP8TestMode);
-            }
-            set {
+			}
+			set {
 				if (wP8TestMode != value.ToString()) {
 					wP8TestMode = value.ToString();
 					SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "WP8TestMode", value.ToString());
 					SoomlaEditorScript.DirtyEditor();
-                }
-            }
-        }
+				}
+			}
+		}
 	}
 }
