@@ -4,8 +4,7 @@ Haven't you ever wanted an in-app purchase one liner that looks like this ?!
 StoreInventory.BuyItem("[itemId]");
 ```
 
-unity3d-store-bazaar
----
+# unity3d-store-bazaar (now with [nivad.io](http://nivad.io) validation service)
 
 ## Economy Model
 ![SOOMLA's Economy Model](http://know.soom.la/img/tutorial_img/soomla_diagrams/EconomyModel.png)
@@ -15,7 +14,7 @@ unity3d-store-bazaar
 
 ####Pre baked unitypackages:
 
-[unity3d-store-bazaar v1.12.0](https://github.com/orouji/unity3d-store-bazaar/releases/tag/1.12.0)
+[unity3d-store-bazaar v1.13.0](https://github.com/orouji/unity3d-store-bazaar/releases/tag/1.13.0)
 
 #### From sources:
  - Clone this repository recursively: `git clone --recursive https://github.com/orouji/unity3d-store-bazaar.git`
@@ -36,9 +35,9 @@ $ git clone --recursive git@github.com:orouji/unity3d-store-bazaar.git
 
 ## Getting Started
 
-1. First, you'll need to either download (RECOMMENDED) the unity3d-store pre-baked packages
+1. First, you'll need to download the unity3d-store pre-baked packages
 
-  - Download `soomla-unity3d-core.unitypackage` and `soomla-unity3d-store.unitypackage` from this link [unity3d-store-bazaar v1.12.0](https://github.com/orouji/unity3d-store-bazaar/releases/tag/1.12.0)
+  - Download `soomla-unity3d-core.unitypackage` and `soomla-unity3d-store.unitypackage` from this link [unity3d-store-bazaar v1.13.0](https://github.com/orouji/unity3d-store-bazaar/releases/tag/1.13.0)
 
 2. Import both unity packages to your unity project
 
@@ -48,6 +47,10 @@ $ git clone --recursive git@github.com:orouji/unity3d-store-bazaar.git
   - **Soomla Secret** - This is an encryption secret you provide that will be used to secure your data.
 
   - **Public Key** - You'll need to insert the public key given to you from Google or Bazaar. **Choose both secrets wisely. You can't change them after you launch your game!**
+
+  - **Nivad Application Id** - In case you checked Nivad Fraud Protection (Get this from [nivad.io](nivad.io) panel)
+
+  - **Nivad Billing Secret** - In case you checked Nivad Fraud Protection (Get this from [nivad.io](nivad.io) panel)
 
 4. Create your own implementation of `IStoreAssets` in order to describe your game's specific assets.
 
@@ -107,10 +110,6 @@ For Assets/Plugins/wp-store.dll Check Editor platform only
 For Assets/Plugins/WP8/soomla-wp-core.dll Check WP8Player platform only and select Assets/Plugins/soomla-wp-core.dll for the Placeholder
 
 For Assets/Plugins/WP8/wp-store.dll Check WP8Player platform only and select Assets/Plugins/wp-store.dll for the Placeholder
-
-#### IAP Test Mode
-
-To activate the IAP Test Mode select the checkbox in the Soomla Config Panel. Declare your test IAP in Assets/Plugins/WP8/IAPMock.xml
 
 #### Simulator build
 
