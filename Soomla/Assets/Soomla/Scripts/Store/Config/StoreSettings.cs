@@ -58,6 +58,9 @@ namespace Soomla.Store
 		GUIContent noneBPLabel = new GUIContent("You have your own Billing Service");
 		GUIContent playLabel = new GUIContent("Google Play");
 		GUIContent playSsvLabel = new GUIContent("Fraud Protection [?]:", "Check if you want to turn on purchases verification with SOOMLA Fraud Protection Service.");
+		GUIContent nivadLabel = new GUIContent("Fraud Protection [?]:", "Check if you want to use Nivad");
+		GUIContent nivadAppIdLabel = new GUIContent("Nivad Application ID");
+        GUIContent nivadBillingSecretLabel = new GUIContent("Nivad Billing Secret");
 		GUIContent playClientIdLabel = new GUIContent("Client ID");
 		GUIContent playClientSecretLabel = new GUIContent("Client Secret");
 		GUIContent playRefreshTokenLabel = new GUIContent("Refresh Token");
@@ -157,6 +160,25 @@ namespace Soomla.Store
 				EditorGUILayout.EndHorizontal();
 
 				EditorGUILayout.Space();
+
+				EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(SoomlaEditorScript.EmptyContent, SoomlaEditorScript.SpaceWidth, SoomlaEditorScript.FieldHeight);
+                NivadValidation = EditorGUILayout.Toggle(nivadLabel, NivadValidation);
+                EditorGUILayout.EndHorizontal();
+
+                if (NivadValidation) {
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.Space();
+                    EditorGUILayout.LabelField(nivadAppIdLabel, SoomlaEditorScript.FieldWidth, SoomlaEditorScript.FieldHeight);
+                    NivadAppId = EditorGUILayout.TextField(NivadAppId, SoomlaEditorScript.FieldHeight);
+                    EditorGUILayout.EndHorizontal();
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.Space();
+                    EditorGUILayout.LabelField(nivadBillingSecretLabel, SoomlaEditorScript.FieldWidth, SoomlaEditorScript.FieldHeight);
+                    NivadBillingSecret = EditorGUILayout.TextField(NivadBillingSecret, SoomlaEditorScript.FieldHeight);
+                    EditorGUILayout.EndHorizontal();
+                }
 			}
 
 			GPlayBP = EditorGUILayout.ToggleLeft(playLabel, GPlayBP);
@@ -288,11 +310,15 @@ namespace Soomla.Store
 					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar.meta");
 					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingServiceBazaar.jar");
 					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingServiceBazaar.jar.meta");
+					FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/java-jwt-2.1.0.jar");
+                    FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Plugins/Android/Soomla/libs/java-jwt-2.1.0.jar.meta");
 				} else {
 					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/AndroidStoreBazaar.jar",
 						Application.dataPath + "/Plugins/Android/Soomla/libs/AndroidStoreBazaar.jar");
 					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/IInAppBillingServiceBazaar.jar",
 						Application.dataPath + "/Plugins/Android/Soomla/libs/IInAppBillingServiceBazaar.jar");
+					FileUtil.CopyFileOrDirectory(bpRootPath + "bazaar/java-jwt-2.1.0.jar",
+                    						Application.dataPath + "/Plugins/Android/Soomla/libs/java-jwt-2.1.0.jar");
 				}
 			}catch {}
 		}
@@ -350,6 +376,10 @@ namespace Soomla.Store
 
 		public static string BAZAAR_PUB_KEY_DEFAULT = "YOUR BAZAAR PUBLIC KEY";
 
+		public static string NIVAD_APP_ID_DEFAULT = "YOUR NIVAD APP ID";
+		public static string NIVAD_BILLING_SECRET_DEFAULT = "YOUR NIVAD BILLING SECRET";
+
+
 		private static string bazaarPublicKey;
 		public static string BazaarPublicKey
 		{
@@ -393,6 +423,50 @@ namespace Soomla.Store
 				}
 			}
 		}
+
+		private static string nivadAppId;
+        public static string NivadAppId
+        {
+            get {
+                if (nivadAppId == null) {
+                    nivadAppId = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "NivadAppId");
+                    if (nivadAppId == null) {
+                        nivadAppId = NIVAD_APP_ID_DEFAULT;
+                    }
+                }
+                return nivadAppId;
+            }
+            set
+            {
+                if (nivadAppId != value) {
+                    nivadAppId = value;
+                    SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "NivadAppId", value.ToString());
+                    SoomlaEditorScript.DirtyEditor();
+                }
+            }
+        }
+
+        private static string nivadBillingSecret;
+        public static string NivadBillingSecret
+        {
+            get {
+                if (nivadBillingSecret == null) {
+                    nivadBillingSecret = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "NivadBillingSecret");
+                    if (nivadBillingSecret == null) {
+                        nivadBillingSecret = NIVAD_BILLING_SECRET_DEFAULT;
+                    }
+                }
+                return nivadBillingSecret;
+            }
+            set
+            {
+                if (nivadBillingSecret != value) {
+                    nivadBillingSecret = value;
+                    SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "NivadBillingSecret", value.ToString());
+                    SoomlaEditorScript.DirtyEditor();
+                }
+            }
+        }
 
 		private static string playClientId;
 		public static string PlayClientId
@@ -522,6 +596,27 @@ namespace Soomla.Store
 				}
 			}
 		}
+
+		private static string nivadValidation;
+        public static bool NivadValidation
+        {
+            get {
+                if (nivadValidation == null) {
+                    nivadValidation = SoomlaEditorScript.GetConfigValue (StoreModulePrefix, "NivadValidation");
+                    if (nivadValidation == null) {
+                        nivadValidation = false.ToString();
+                    }
+                }
+                return Convert.ToBoolean(nivadValidation);
+            }
+            set {
+                if (nivadValidation != value.ToString()) {
+                    nivadValidation = value.ToString();
+                    SoomlaEditorScript.SetConfigValue(StoreModulePrefix, "NivadValidation", value.ToString());
+                    SoomlaEditorScript.DirtyEditor();
+                }
+            }
+        }
 
 		private static string iosSSV;
 		public static bool IosSSV

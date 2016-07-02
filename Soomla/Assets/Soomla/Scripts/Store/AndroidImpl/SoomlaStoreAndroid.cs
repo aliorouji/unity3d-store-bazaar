@@ -40,6 +40,22 @@ namespace Soomla.Store {
 					SoomlaUtils.LogError (TAG, "You chose Bazaar billing service, but RSA Public Key is not set!! Stopping here!!");
 					throw new ExitGUIException ();
 				}
+
+				if (StoreSettings.NivadValidation) {
+                    if (string.IsNullOrEmpty(StoreSettings.NivadAppId) ||
+                        StoreSettings.NivadAppId == StoreSettings.NIVAD_APP_ID_DEFAULT) {
+
+                        SoomlaUtils.LogError(TAG, "You chose Nivad Validation, but NivadApplicationID is not set!! Stopping here!!");
+                        throw new ExitGUIException();
+                    }
+
+                    if (string.IsNullOrEmpty(StoreSettings.NivadBillingSecret) ||
+                        StoreSettings.NivadBillingSecret == StoreSettings.NIVAD_BILLING_SECRET_DEFAULT) {
+
+                        SoomlaUtils.LogError(TAG, "You chose Nivad Validation, but NivadBillingSecret is not set!! Stopping here!!");
+                        throw new ExitGUIException();
+                    }
+                }
 			}
 
 			if (StoreSettings.GPlayBP) {
@@ -87,6 +103,43 @@ namespace Soomla.Store {
 				using (AndroidJavaClass jniBazaarIabServiceClass = new AndroidJavaClass ("com.soomla.store.billing.bazaar.BazaarIabService")) {
 					AndroidJavaObject jniBazaarIabService = jniBazaarIabServiceClass.CallStatic<AndroidJavaObject> ("getInstance");
 					jniBazaarIabService.Call ("setPublicKey", StoreSettings.BazaarPublicKey);
+
+					if (StoreSettings.NivadValidation) {
+                        using(AndroidJavaObject obj_HashMap = new AndroidJavaObject("java.util.HashMap"))
+                        {
+                            IntPtr method_Put = AndroidJNIHelper.GetMethodID(obj_HashMap.GetRawClass(), "put",
+                                                                             "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+
+                            object[] args = new object[2];
+
+                            // client ID
+                            using(AndroidJavaObject k = new AndroidJavaObject("java.lang.String", "applicationId"))
+                            {
+                                using(AndroidJavaObject v = new AndroidJavaObject("java.lang.String", StoreSettings.NivadAppId))
+                                {
+                                    args[0] = k;
+                                    args[1] = v;
+                                    AndroidJNI.CallObjectMethod(obj_HashMap.GetRawObject(),
+                                                                method_Put, AndroidJNIHelper.CreateJNIArgArray(args));
+                                }
+                            }
+
+                            // client secret
+                            using(AndroidJavaObject k = new AndroidJavaObject("java.lang.String", "billingSecret"))
+                            {
+                                using(AndroidJavaObject v = new AndroidJavaObject("java.lang.String", StoreSettings.NivadBillingSecret))
+                                {
+                                    args[0] = k;
+                                    args[1] = v;
+                                    AndroidJNI.CallObjectMethod(obj_HashMap.GetRawObject(),
+                                                                method_Put, AndroidJNIHelper.CreateJNIArgArray(args));
+                                }
+                            }
+
+                            jniBazaarIabService.Call("configVerifyPurchases", obj_HashMap);
+                        }
+                    }
+
 					jniBazaarIabServiceClass.SetStatic("AllowAndroidTestPurchases", false);
 				}
 			}
