@@ -4,7 +4,7 @@ Haven't you ever wanted an in-app purchase one liner that looks like this ?!
 StoreInventory.BuyItem("[itemId]");
 ```
 
-# unity3d-store-bazaar (now with [nivad.io](http://nivad.io) validation service)
+# unity3d-store-bazaar
 
 ## Economy Model
 ![SOOMLA's Economy Model](http://know.soom.la/img/tutorial_img/soomla_diagrams/EconomyModel.png)
@@ -47,10 +47,6 @@ $ git clone --recursive git@github.com:orouji/unity3d-store-bazaar.git
   - **Soomla Secret** - This is an encryption secret you provide that will be used to secure your data.
 
   - **Public Key** - You'll need to insert the public key given to you from Google or Bazaar. **Choose both secrets wisely. You can't change them after you launch your game!**
-
-  - **Nivad Application Id** - In case you checked Nivad Fraud Protection (Get this from [nivad.io](nivad.io) panel)
-
-  - **Nivad Billing Secret** - In case you checked Nivad Fraud Protection (Get this from [nivad.io](nivad.io) panel)
 
 4. Create your own implementation of `IStoreAssets` in order to describe your game's specific assets.
 
